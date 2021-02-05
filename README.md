@@ -23,5 +23,5 @@ $ bitchute-get {-options} [URL]
 ## Example
 
 ```console
-$ bitchute-get -p https://www.bitchute.com/video/xxxxxxxxxxx/
+$ bitchute-get https://www.bitchute.com/video/xxxxxxxxxxx/
 ```

@@ -45,5 +45,5 @@ else {
   console.log('\nOptions:');
   console.log(' p - (P)rint only the html video info, no download');
   console.log('\nExample:');
-  console.log('$ bitchute-get -p https://www.bitchute.com/video/xxxxxxxxxxx/');
+  console.log('$ bitchute-get https://www.bitchute.com/video/xxxxxxxxxxx/');
 }
