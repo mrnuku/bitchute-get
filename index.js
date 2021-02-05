@@ -111,7 +111,6 @@ exports.main = videoUrl => {
     const bar = new cliProgress.SingleBar({
       format: '[{bar}] {percentage}% | ETA: {eta}s | {value}/{total} | Speed: {speed}'
     }, cliProgress.Presets.shades_grey);
-    let startTime = new Date();
 
     downloaderHelper.on('end', () => {
       bar.stop();
@@ -150,8 +149,10 @@ exports.main = videoUrl => {
   }))
   .then(state => {
     // console.log('COMPLETED');
+    return state;
   })
-  .catch(() => {
+  .catch(error => {
     console.error('FINISHED WITH ERROR');
+    return Promise.reject(error);
   });
 }
