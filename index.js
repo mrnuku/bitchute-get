@@ -9,9 +9,6 @@ const { DownloaderHelper } = require('node-downloader-helper');
 const moment = require('moment');
 const cliProgress = require('cli-progress');
 
-// https://www.bitchute.com/video/zAbAg3ylE0o/
-// const videoUrlParsed = url.parse(videoUrl);
-
 process.bitchute_get = {
   state: {}
 };
@@ -111,7 +108,7 @@ exports.main = videoUrl => {
       }
     };
 
-    const downloaderHelper = new DownloaderHelper(state.metaData.videoUrl, __dirname, options);
+    const downloaderHelper = new DownloaderHelper(state.metaData.videoUrl, process.cwd(), options);
     const bar = new cliProgress.SingleBar({
       format: '[{bar}] {percentage}% | ETA: {eta}s | {value}/{total} | Speed: {speed}'
     }, cliProgress.Presets.shades_grey);
@@ -153,7 +150,7 @@ exports.main = videoUrl => {
     downloaderHelper.resume();
   }))
   .then(state => {
-    console.log('COMPLETED');
+    // console.log('COMPLETED');
   })
   .catch(() => {
     console.error('FINISHED WITH ERROR');
