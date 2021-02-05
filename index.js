@@ -10,7 +10,6 @@ const moment = require('moment');
 const cliProgress = require('cli-progress');
 
 process.bitchute_get = {
-  state: {}
 };
 
 // https://gist.github.com/thomseddon/3511330
@@ -20,32 +19,31 @@ const byteHelper = function (value) {
   }
   const units = ['b', 'kB', 'MB', 'GB', 'TB'];
   const number = Math.floor(Math.log(value) / Math.log(1024));
-  return (value / Math.pow(1024, Math.floor(number))).toFixed(1) + ' ' +
-      units[number];
+  return (value / Math.pow(1024, Math.floor(number))).toFixed(1) + ' ' + units[number];
 };
 
 exports.main = videoUrl => {
   return new Promise((resolve, reject) => {
-    const urlParsed = url.parse(videoUrl);
-    resolve(urlParsed);
+    resolve({
+      urlParsed: url.parse(videoUrl)
+    });
   })
   // validate input url
-  .then(urlParsed => {
-    if (urlParsed.protocol !== 'https:') {
-      console.log(`not supported protocol:  ${urlParsed.protocol}`);
+  .then(state => {
+    if (state.urlParsed.protocol !== 'https:') {
+      console.log(`not supported protocol:  ${state.urlParsed.protocol}`);
       return new Promise.reject();
     }
-    else if (urlParsed.host !== 'www.bitchute.com') {
-      console.log(`wrong host:  ${urlParsed.host}`);
+    else if (state.urlParsed.host !== 'www.bitchute.com') {
+      console.log(`wrong host:  ${state.urlParsed.host}`);
       return new Promise.reject();
     }
-    else if (!urlParsed.path.startsWith('/video/')) {
-      console.log(`malformed url path:  ${urlParsed.path}`);
+    else if (!state.urlParsed.path.startsWith('/video/')) {
+      console.log(`malformed url path:  ${state.urlParsed.path}`);
       return new Promise.reject();
     }
 
-    process.bitchute_get.state.urlParsed = urlParsed;
-    return process.bitchute_get.state;
+    return state;
   })
   // download target page
   .then(state => new Promise((resolve, reject) => {
@@ -57,7 +55,7 @@ exports.main = videoUrl => {
     };
 
     const request = https.request(requestOptions, res => {
-      var body = "";
+      var body = '';
       res.on('data', chunk => {
         body += chunk; // string conversion
       }).on('end', () => {
@@ -79,23 +77,24 @@ exports.main = videoUrl => {
     const dateSplit = pageDetail.querySelector('.video-publish-date').innerHTML.trim().replace('First published at ','').slice(0, -1).split(' on ');
     const dateStr = `${dateSplit[1]} ${dateSplit[0]}`; // February 3rd, 2021 15:54 UTC
     const channelDetails = pageDetail.querySelector('.channel-banner').querySelector('.details');
-    const videoUrl = root.querySelector('#player').querySelector('source').getAttribute('src');
 
-    const metaData = {
-      date: moment(dateStr, "MMM DD, YYYY HH:mm A").format(),
-      channel: decode(channelDetails.querySelector('.name').querySelector('a').innerHTML).trim(),
-      owner: decode(channelDetails.querySelector('.owner').querySelector('a').innerHTML).trim(),
-      title: decode(root.querySelector('#video-title').innerHTML).trim(),
-      videoUrl
-    }
+    state = {
+      ...state,
+      metaData:{
+        date: moment(dateStr, 'MMM DD, YYYY HH:mm A').format(),
+        channel: decode(channelDetails.querySelector('.name').querySelector('a').innerHTML).trim(),
+        owner: decode(channelDetails.querySelector('.owner').querySelector('a').innerHTML).trim(),
+        title: decode(root.querySelector('#video-title').innerHTML).trim(),
+        videoUrl: root.querySelector('#player').querySelector('source').getAttribute('src')
+      }
+    };
 
-    state.metaData = metaData;
     console.log(metaData);
     return state;
   })
   // start download
   .then(state => new Promise((resolve, reject) => {
-    if (!process.bitchute_get.options.download) {
+    if (process.bitchute_get.options !== undefined && !process.bitchute_get.options.download) {
       console.log('skipping download');
       resolve(state);
     }
