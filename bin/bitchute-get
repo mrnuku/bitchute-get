@@ -1,0 +1,35 @@
+#!/bin/sh
+# stolen from npm
+(set -o igncr) 2>/dev/null && set -o igncr; # cygwin encoding fix
+
+basedir=`dirname "$0"`
+
+case `uname` in
+    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
+esac
+
+NODE_EXE="$basedir/node.exe"
+if ! [ -x "$NODE_EXE" ]; then
+  NODE_EXE=node
+fi
+
+BITCHUTE_GET_CLI_JS="$basedir/node_modules/bitchute-get/bin/bitchute-get-cli.js"
+
+case `uname` in
+  *MINGW*)
+    BITCHUTE_GET_PREFIX=`"$NODE_EXE" "BITCHUTE_GET_CLI_JS" prefix -g`
+    BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS="$BITCHUTE_GET_PREFIX/node_modules/bitchute-get/bin/bitchute-get-cli.js"
+    if [ -f "$BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS" ]; then
+      BITCHUTE_GET_CLI_JS="$BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS"
+    fi
+    ;;
+  *CYGWIN*)
+    BITCHUTE_GET_PREFIX=`"$NODE_EXE" "$BITCHUTE_GET_CLI_JS" prefix -g`
+    BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS="$BITCHUTE_GET_PREFIX/node_modules/bitchute-get/bin/bitchute-get-cli.js"
+    if [ -f "$BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS" ]; then
+      BITCHUTE_GET_CLI_JS="$BITCHUTE_GET_PREFIX_BITCHUTE_GET_CLI_JS"
+    fi
+    ;;
+esac
+
+"$NODE_EXE" "$BITCHUTE_GET_CLI_JS" "$@"

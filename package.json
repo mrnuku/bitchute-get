@@ -1,0 +1,35 @@
+{
+  "name": "bitchute-get",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrnuku/bitchute-get.git"
+  },
+  "keywords": [
+    "nodemon",
+    "interactive",
+    "hotloader"
+  ],
+  "author": "mrnuku",
+  "license": "MIT",
+  "bin": {
+    "bitchute-get": "./bin/bitchute-get-cli.js"
+  },
+  "directories": {
+    "bin": "./bin"
+  },
+  "homepage": "https://nuisance.club/",
+  "preferGlobal": true,
+  "dependencies": {
+    "cli-progress": "^3.9.0",
+    "html-entities": "^2.1.0",
+    "moment": "^2.29.1",
+    "node-downloader-helper": "^1.0.17",
+    "node-html-parser": "^2.1.0"
+  }
+}
