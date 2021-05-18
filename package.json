@@ -23,7 +23,7 @@
   "directories": {
     "bin": "./bin"
   },
-  "homepage": "https://nuisance.club/",
+  "homepage": "https://forum.holyspirit.hu",
   "preferGlobal": true,
   "dependencies": {
     "cli-progress": "^3.9.0",
