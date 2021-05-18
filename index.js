@@ -89,7 +89,7 @@ exports.main = videoUrl => {
       }
     };
 
-    console.log(metaData);
+    console.log(state.metaData);
     return state;
   })
   // start download
@@ -111,19 +111,44 @@ exports.main = videoUrl => {
     const bar = new cliProgress.SingleBar({
       format: '[{bar}] {percentage}% | ETA: {eta}s | {value}/{total} | Speed: {speed}'
     }, cliProgress.Presets.shades_grey);
+    var timer = null;
+    const pollingInterval = 5000;
+
+    const polling1 = () => {
+      console.log('timeout1');
+      downloaderHelper.pause();
+    }
+
+    const polling2 = () => {
+      console.log('timeout2');
+      downloaderHelper.pause();
+    }
+
+    const polling3 = () => {
+      console.log('timeout3');
+      downloaderHelper.pause();
+    }
 
     downloaderHelper.on('end', () => {
+      clearTimeout(timer);
       bar.stop();
       resolve(state);
     });
 
+    downloaderHelper.on('pause', () => {
+      console.log('pause');
+      downloaderHelper.resume();
+    });
+
     downloaderHelper.on('error', error => {
+      clearTimeout(timer);
       bar.stop();
       console.error(`${error.status}: ${error.message}`);
       reject(error);
     });
 
     downloaderHelper.on('download', downloadInfo => {
+      timer = setTimeout(polling1, pollingInterval);
       bar.start(downloadInfo.totalSize, downloadInfo.downloadedSize, {
         speed: 'N/A'
       });
@@ -131,6 +156,8 @@ exports.main = videoUrl => {
 
     downloaderHelper.on('progress', stats => {
       const speed = byteHelper(stats.speed);
+      clearTimeout(timer);
+      timer = setTimeout(polling2, pollingInterval);
       bar.update(stats.downloaded, {
         speed: `${speed}/s`
       });
@@ -138,6 +165,8 @@ exports.main = videoUrl => {
 
     downloaderHelper.on('skip', skipInfo => {
       console.log('continuing broken download');
+      clearTimeout(timer);
+      timer = setTimeout(polling3, pollingInterval);
       bar.update(skipInfo.downloadedSize, {
         speed: 'N/A'
       });
